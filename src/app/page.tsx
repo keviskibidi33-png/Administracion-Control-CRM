@@ -10,6 +10,7 @@ export default function Home() {
           title="Control Administración"
           subtitle="Gestión administrativa de facturación, cobros y control interno."
           viewMode="ADMIN"
+          availableViewModes={["LAB", "ADMIN"]}
           exportMode="administracion"
           storageNamespace="programacion-administracion"
         />
