@@ -630,10 +630,12 @@ const AutorizacionCell = React.memo(({ getValue, row: { original }, column: { id
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const meta = table.options.meta as any
     const userRole = normalizeProgramacionAccessValue(meta?.userRole)
+    const viewMode = meta?.viewMode || ""
+    const canAdministrationOverrideLab = viewMode === "LAB" && (userRole === "administrativo" || userRole === "admin")
 
     const getCanEditAutorizacion = (): boolean => {
+        if (canAdministrationOverrideLab) return true
         if (meta?.canWrite === false) return false
-        const viewMode = meta?.viewMode || ""
         if (userRole === 'admin') {
             if (viewMode === 'LAB') return false
             return true

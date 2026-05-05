@@ -136,6 +136,8 @@ export function FixedProgramacionEditor({
     [activeViewMode, getCanWrite],
   )
   const hasScopedAccess = React.useMemo(() => hasScopedProgramacionViewAccess(email, activeViewMode), [email, activeViewMode])
+  const normalizedRole = React.useMemo(() => normalizeRole(role), [role])
+  const canEditLabAuthorizationOnly = activeViewMode === "LAB" && (normalizedRole === "administrativo" || normalizedRole === "admin")
   const storageIdentity = React.useMemo(() => userId || email || role || "anonymous", [email, role, userId])
   const tableStateStorageKey = React.useMemo(
     () => `${storageNamespace}:table-state:v1:${storageIdentity}:${activeViewMode}`,
@@ -220,7 +222,15 @@ export function FixedProgramacionEditor({
             </span>
           )}
 
-          {activeViewMode === "LAB" ? (
+          {canEditLabAuthorizationOnly ? (
+            <span
+              className="flex cursor-default items-center gap-1.5 rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1 text-[10px] font-bold uppercase text-blue-700"
+              title="Solo la columna AUTORIZADO de LAB está habilitada para Administración"
+            >
+              <Info className="h-3 w-3" />
+              Edición Parcial
+            </span>
+          ) : activeViewMode === "LAB" ? (
             <span
               className="flex cursor-default items-center gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-bold uppercase text-amber-700"
               title="La vista LAB está bloqueada para edición"
