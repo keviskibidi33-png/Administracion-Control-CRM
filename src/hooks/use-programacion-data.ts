@@ -249,7 +249,7 @@ export function useProgramacionData(_moduleKind?: ProgramacionModuleKind) {
     }, [])
 
     // 1. Fetch Inicial (Carga los 2000 registros una sola vez)
-    const { data: programacion = [], isLoading } = useQuery({
+    const { data: programacion = [], isLoading, refetch } = useQuery({
         queryKey: ["programacion"],
         enabled: !authLoading,
         staleTime: Infinity,
@@ -633,6 +633,7 @@ export function useProgramacionData(_moduleKind?: ProgramacionModuleKind) {
         realtimeStatus,
         updateField,
         insertRow,
-        exportToExcel
+        exportToExcel,
+        refetch,
     }
 }

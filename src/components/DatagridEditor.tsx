@@ -73,10 +73,20 @@ export function DatagridEditor() {
     const searchParams = useSearchParams()
     const modeParam = searchParams.get('mode')
     const { loading: authLoading, userId, role, email, allowedViews, getCanView, getCanWrite, needsAuth, permissions } = useCurrentUser()
-    const { data, isLoading, realtimeStatus, updateField, insertRow, exportToExcel } = useProgramacionData()
+    const { data, isLoading, realtimeStatus, updateField, insertRow, exportToExcel, refetch } = useProgramacionData()
 
     // State to track filtered data for Excel export
     const [filteredItems, setFilteredItems] = React.useState<ProgramacionServicio[]>([])
+    const [isRefreshing, setIsRefreshing] = React.useState(false)
+
+    const handleRefresh = React.useCallback(async () => {
+        setIsRefreshing(true)
+        try {
+            await refetch()
+        } finally {
+            setIsRefreshing(false)
+        }
+    }, [refetch])
 
     // Initialize state based on URL param, with role-based fallback
     const roleParam = searchParams.get('role') || ''
@@ -252,6 +262,18 @@ export function DatagridEditor() {
                 </div>
 
                 <div className="flex items-center gap-3">
+                    {/* Botón Recargar */}
+                    <button
+                        onClick={handleRefresh}
+                        disabled={isRefreshing || isLoading}
+                        title="Recargar datos desde la base de datos"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-md text-xs font-medium transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+                        <span>{isRefreshing ? "Actualizando..." : "Recargar"}</span>
+                    </button>
+
+                    {/* Botón Exportar Excel */}
                     <button
                         onClick={() => {
                             const modeMap = { 'LAB': 'lab', 'COM': 'comercial', 'ADMIN': 'administracion' } as const
@@ -264,6 +286,7 @@ export function DatagridEditor() {
                         <span>Exportar Excel</span>
                     </button>
 
+                    {/* Indicador de conexión */}
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-50 border border-zinc-200 shadow-inner" title={`Estado Realtime: ${realtimeStatus}`}>
                             {realtimeStatus === "SUBSCRIBED" ? (
