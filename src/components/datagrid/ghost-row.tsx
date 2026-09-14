@@ -7,6 +7,7 @@ import { StatusSelect } from "./status-select"
 import { PaymentSelect } from "./payment-select"
 import { AuthorizationSelect } from "./authorization-select"
 import { toast } from "sonner"
+import type { ProgramacionServicio } from "@/types/programacion"
 
 // Zod Schema for validation
 const insertSchema = z.object({
@@ -179,8 +180,7 @@ export function GhostRow<TData>({ table, onInsert }: GhostRowProps<TData>) {
             ot: newData['ot' as keyof TData]
         }
 
-        // @ts-ignore - TData is ProgramacionServicio
-        const existingData = (table.options.data as any[]) || []
+        const existingData = (table.options.data as unknown as ProgramacionServicio[]) || []
 
         // --- DUPLICATE RECEP NUMERO CHECK ---
         const recepNumero = String(newData['recep_numero' as keyof TData] ?? "").trim()
