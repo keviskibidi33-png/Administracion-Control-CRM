@@ -43,14 +43,29 @@ const FacturacionCell = React.memo(({ getValue, row: { original }, column: { id 
     const onBlur = () => {
         setIsEditing(false)
         if (!canWrite) return
-        const finalValue = inputValue.trim()
+        let finalValue = inputValue.trim()
+        if (finalValue) {
+            if (/^\d+$/.test(finalValue)) {
+                const paddedNum = finalValue.length < 4 ? finalValue.padStart(4, '0') : finalValue
+                finalValue = `F001-${paddedNum}`
+            } else if (/^(\d+)-(\d+)$/.test(finalValue)) {
+                const match = finalValue.match(/^(\d+)-(\d+)$/)
+                if (match) {
+                    finalValue = `F${match[1].padStart(3, '0')}-${match[2].padStart(4, '0')}`
+                }
+            } else if (/^[fF]\d+$/.test(finalValue)) {
+                const nums = finalValue.slice(1)
+                const paddedNum = nums.length < 4 ? nums.padStart(4, '0') : nums
+                finalValue = `F001-${paddedNum}`
+            }
+        }
         if (finalValue !== value) {
             table.options.meta?.updateData(original.id, id, finalValue)
         }
     }
 
     if (isEditing && canWrite) {
-        return <input autoFocus value={inputValue} onChange={e => setInputValue(e.target.value)} onBlur={onBlur} className="w-full h-full bg-white border border-blue-300 rounded text-sm p-1 text-zinc-900 font-medium" placeholder="Ingrese facturación..." />
+        return <input autoFocus value={inputValue} onChange={e => setInputValue(e.target.value)} onBlur={onBlur} className="w-full h-full bg-white border border-blue-300 rounded text-sm p-1 text-zinc-900 font-medium" placeholder="Ej: 1234 o 002-5678" />
     }
 
     return (
